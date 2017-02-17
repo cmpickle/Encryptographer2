@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * @author Cameron Pickle
@@ -37,12 +38,14 @@ public class InboxAdapter extends android.support.v7.widget.RecyclerView.Adapter
 
         public ContactHolder(View view) {
             super(view);
+            ButterKnife.bind(this, view);
             view.setOnClickListener(this);
         }
 
         public void bindContact(Sms sms) {
             this.sms = sms;
-            this.receiveContactImage.setImageBitmap(sms.getImage());
+            if(sms.getImage() != null)
+                this.receiveContactImage.setImageBitmap(sms.getImage());
             this.receiveContactName.setText(sms.getName());
             this.receiveContactBody.setText(sms.getBody());
         }
