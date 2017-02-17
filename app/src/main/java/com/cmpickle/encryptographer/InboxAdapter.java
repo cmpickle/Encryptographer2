@@ -48,6 +48,7 @@ public class InboxAdapter extends android.support.v7.widget.RecyclerView.Adapter
                 this.receiveContactImage.setImageBitmap(sms.getImage());
             this.receiveContactName.setText(sms.getName());
             this.receiveContactBody.setText(sms.getBody());
+            Log.d("test", "ContactHolder created");
         }
 
         @Override

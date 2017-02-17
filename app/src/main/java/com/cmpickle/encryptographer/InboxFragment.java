@@ -1,6 +1,7 @@
 package com.cmpickle.encryptographer;
 
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -66,6 +67,7 @@ public class InboxFragment extends Fragment {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_SMS, Manifest.permission.READ_CONTACTS}, MY_PERMISSIONS_REQUEST_READ_SMS);
         } else {
             Log.d("test", "you do have permission");
+            long startTime = Calendar.getInstance().getTimeInMillis();
             ContentResolver contentResolver = getActivity().getContentResolver();
             Cursor smsInboxCursor = contentResolver.query(Uri.parse("content://sms/inbox"), null, "address IS NOT NULL) GROUP BY (address", null, null);
             int indexBody = smsInboxCursor.getColumnIndex("body");
@@ -76,24 +78,26 @@ public class InboxFragment extends Fragment {
             cal.set(1969, 12, 31, 17, 0);
             long baseTime = cal.getTimeInMillis();
 
+            long endTime = Calendar.getInstance().getTimeInMillis();
+            Log.d("test", "query time: " + (endTime - startTime));
+
             if(indexBody < 0 || !smsInboxCursor.moveToFirst())
                 return;
 
 //        contactAdapter.clear();
 //        phoneNum.clear();
 
+
             do {
-                String dateString = smsInboxCursor.getString(timeMillis);
-                long dateTime = Long.valueOf(dateString);
-                long finalTime = dateTime + baseTime;
-                Date date = new Date(finalTime);
                 SimpleDateFormat format = new SimpleDateFormat("MM/dd h:mm aa");
-                String dateText = format.format(date);
-                String str = ContactLookup.getContactDisplayNameByNumber(smsInboxCursor.getString(indexAddress), getActivity()) + "\n"
-                        + smsInboxCursor.getString(indexBody) + "\n" + dateText + "\n";
-//            phoneNum.add(smsInboxCursor.getString(indexAddress));
-                smses.add(new Sms(Contact.openPhoto(Contact.getContactIDFromNumber(smsInboxCursor.getString(indexAddress), getActivity()), getActivity()), ContactLookup.getContactDisplayNameByNumber(smsInboxCursor.getString(indexAddress), getActivity()), smsInboxCursor.getString(indexBody), dateText));
+                String dateText = format.format(new Date(smsInboxCursor.getLong(timeMillis) + baseTime));
+                startTime = Calendar.getInstance().getTimeInMillis();
+                String address = smsInboxCursor.getString(indexAddress);
+                Activity activity = getActivity();
+                smses.add(new Sms(Contact.openPhoto(Contact.getContactIDFromNumber(address, activity), activity), ContactLookup.getContactDisplayNameByNumber(address, activity), smsInboxCursor.getString(indexBody), dateText));
+                endTime = Calendar.getInstance().getTimeInMillis();
             } while(smsInboxCursor.moveToNext());
+            Log.d("test", "populate data time: " + (endTime - startTime));
 
             smsInboxCursor.close();
         }
