@@ -34,7 +34,6 @@ public class InboxAdapter extends android.support.v7.widget.RecyclerView.Adapter
         TextView receiveContactName;
         @BindView(R.id.receive_body)
         TextView receiveContactBody;
-        private Sms sms;
 
         public ContactHolder(View view) {
             super(view);
@@ -43,7 +42,6 @@ public class InboxAdapter extends android.support.v7.widget.RecyclerView.Adapter
         }
 
         public void bindContact(Sms sms) {
-            this.sms = sms;
             if(sms.getImage() != null)
                 this.receiveContactImage.setImageBitmap(sms.getImage());
             this.receiveContactName.setText(sms.getName());
